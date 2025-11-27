@@ -1,89 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Submit Form to Google Sheet</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
+  <head>
+    <title>Test Google Form → Sheet</title>
+  </head>
+  <body>
+    <h2>Submit Test Data to Google Sheet</h2>
+    <form method="POST" action="https://script.google.com/macros/s/AKfycbzN2P_iMOb4s0jiEy_hxVOJ_6WXBQBOA6DOtBupVknPSP9L_r6962KlNzMNpTb0Wbr8jw/exec">
+      <label>Email (gmail):</label><br>
+      <input type="text" name="gmail" value="testuser@gmail.com" /><br><br>
 
-    form {
-      max-width: 500px;
-      margin: auto;
-    }
+      <label>Group:</label><br>
+      <input type="text" name="group" value="A1" /><br><br>
 
-    input, select, button {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      font-size: 16px;
-    }
+      <label>SID 1:</label><br>
+      <input type="text" name="sid1" value="SID101" /><br><br>
 
-    .success {
-      color: green;
-      font-weight: bold;
-    }
-    .error {
-      color: red;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
+      <label>Marks 1:</label><br>
+      <input type="text" name="marks1" value="90" /><br><br>
 
-  <h2>Student Marks Submission</h2>
+      <label>SID 2:</label><br>
+      <input type="text" name="sid2" value="SID102" /><br><br>
 
-  <form id="marksForm">
-    <label for="gmail">Gmail:</label>
-    <input type="email" id="gmail" name="gmail" required>
+      <label>Marks 2:</label><br>
+      <input type="text" name="marks2" value="88" /><br><br>
 
-    <label for="group">Group:</label>
-    <input type="text" id="group" name="group" required>
-
-    <label for="sid1">Student ID 1:</label>
-    <input type="text" id="sid1" name="sid1" required>
-
-    <label for="marks1">Marks 1:</label>
-    <input type="number" id="marks1" name="marks1" required>
-
-    <label for="sid2">Student ID 2:</label>
-    <input type="text" id="sid2" name="sid2" required>
-
-    <label for="marks2">Marks 2:</label>
-    <input type="number" id="marks2" name="marks2" required>
-
-    <button type="submit">Submit</button>
-    <div id="message"></div>
-  </form>
-
-  <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzN2P_iMOb4s0jiEy_hxVOJ_6WXBQBOA6DOtBupVknPSP9L_r6962KlNzMNpTb0Wbr8jw/exec';
-    const form = document.getElementById('marksForm');
-    const message = document.getElementById('message');
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-
-      fetch(scriptURL, {
-        method: 'POST',
-        mode: 'no-cors', // Required if your script doesn't support CORS
-        body: new FormData(form)
-      })
-      .then(() => {
-        message.textContent = "Form submitted successfully!";
-        message.className = "success";
-        form.reset();
-      })
-      .catch(error => {
-        message.textContent = "Submission failed. Please try again.";
-        message.className = "error";
-        console.error('Error!', error.message);
-      });
-    });
-  </script>
-
-</body>
+      <button type="submit">Submit</button>
+    </form>
+  </body>
 </html>
