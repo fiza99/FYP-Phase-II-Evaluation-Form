@@ -1,80 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Student Marks Submission</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
-    label { display: block; margin-top: 10px; }
-    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
-    .success { color: green; }
-    .error { color: red; }
+    body {
+      font-family: Arial;
+      margin: 30px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+    }
+    button {
+      padding: 10px;
+    }
+    .error {
+      color: red;
+    }
   </style>
 </head>
 <body>
   <h2>Student Marks Submission</h2>
-  
+
   <form id="marksForm">
-    <label for="gmail">Your Gmail:</label>
-    <input type="email" id="gmail" name="gmail" required>
+    <label>Your Gmail:</label>
+    <input type="email" id="gmail" required>
 
-    <label for="group">Group Name:</label>
-    <input type="text" id="group" name="group" required>
+    <label>Group Name:</label>
+    <input type="text" id="group" required>
 
-    <label for="sid1">Student ID 1:</label>
-    <input type="text" id="sid1" placeholder="e.g., 1234" required>
+    <label>Student ID 1:</label>
+    <input type="text" id="sid1" required>
 
-    <label for="marks1">Marks for Student 1:</label>
+    <label>Marks for Student 1:</label>
     <input type="number" id="marks1" required>
 
-    <label for="sid2">Student ID 2:</label>
-    <input type="text" id="sid2" placeholder="e.g., 1235" required>
+    <label>Student ID 2:</label>
+    <input type="text" id="sid2" required>
 
-    <label for="marks2">Marks for Student 2:</label>
+    <label>Marks for Student 2:</label>
     <input type="number" id="marks2" required>
 
     <button type="submit">Submit</button>
+    <p id="status" class="error"></p>
   </form>
 
-  <p id="message"></p>
-
   <script>
-    const form = document.getElementById('marksForm');
-    const message = document.getElementById('message');
+    const form = document.getElementById("marksForm");
+    const status = document.getElementById("status");
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const data = {
-        gmail: form.gmail.value,
-        group: form.group.value,
-        marks: {
-          [form.sid1.value]: form.marks1.value,
-          [form.sid2.value]: form.marks2.value
-        }
+      const payload = {
+        gmail: document.getElementById("gmail").value,
+        group: document.getElementById("group").value,
+        students: [
+          {
+            id: document.getElementById("sid1").value,
+            marks: document.getElementById("marks1").value
+          },
+          {
+            id: document.getElementById("sid2").value,
+            marks: document.getElementById("marks2").value
+          }
+        ]
       };
 
       try {
-        const res = await fetch("https://script.google.com/macros/s/AKfycbz7HEmcrAXUUNq5z7Y1JrmgMph9fKH0tqtKaOipFzW_k9aA2BtrFF6BqmMJLbOQ1wNW/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbzN2P_iMOb4s0jiEy_hxVOJ_6WXBQBOA6DOtBupVknPSP9L_r6962KlNzMNpTb0Wbr8jw/exec", {
           method: "POST",
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload),
           headers: {
             "Content-Type": "application/json"
           }
         });
 
-        const result = await res.json();
-        if (result.status === "success") {
-          message.textContent = "✅ Marks submitted successfully!";
-          message.className = "success";
+        if (response.ok) {
+          status.style.color = "green";
+          status.textContent = "Data submitted successfully!";
           form.reset();
         } else {
-          message.textContent = "❌ Error: " + result.message;
-          message.className = "error";
+          status.textContent = "Failed to submit: " + response.statusText;
         }
-      } catch (err) {
-        message.textContent = "❌ Request failed: " + err.message;
-        message.className = "error";
+      } catch (error) {
+        status.textContent = "Request failed: " + error.message;
       }
     });
   </script>
