@@ -1,95 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>FYP Evaluation Form</title>
+  <meta charset="UTF-8">
+  <title>Student Marks Submission</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-    input[type="text"], input[type="email"], input[type="number"] {
-      padding: 6px; width: 100%; margin-bottom: 10px;
-    }
-    label { font-weight: bold; margin-top: 10px; display: block; }
-    .student-box { margin-bottom: 10px; }
-    button {
-      padding: 10px 20px; background-color: #007bff; color: white;
-      border: none; cursor: pointer;
-    }
-    button:hover { background-color: #0056b3; }
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+    label { display: block; margin-top: 10px; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
+    .success { color: green; }
+    .error { color: red; }
   </style>
 </head>
 <body>
+  <h2>Student Marks Submission</h2>
+  
+  <form id="marksForm">
+    <label for="gmail">Your Gmail:</label>
+    <input type="email" id="gmail" name="gmail" required>
 
-  <h2>FYP Proposal Evaluation Submission</h2>
+    <label for="group">Group Name:</label>
+    <input type="text" id="group" name="group" required>
 
-  <label for="gmail">Evaluator Gmail:</label>
-  <input type="email" id="gmail" placeholder="your.email@pucit.edu.pk" required>
+    <label for="sid1">Student ID 1:</label>
+    <input type="text" id="sid1" placeholder="e.g., 1234" required>
 
-  <label for="group">Group ID:</label>
-  <input type="text" id="group" placeholder="BCSF22-01" required>
+    <label for="marks1">Marks for Student 1:</label>
+    <input type="number" id="marks1" required>
 
-  <div id="student-marks-section">
-    <h3>Student Marks</h3>
+    <label for="sid2">Student ID 2:</label>
+    <input type="text" id="sid2" placeholder="e.g., 1235" required>
 
-    <!-- Add student marks here -->
-    <div class="student-box">
-      <label>BCSF22M011:</label>
-      <input type="number" class="mark-input" data-sid="BCSF22M011" placeholder="Marks out of 10" min="0" max="10">
-    </div>
-    <div class="student-box">
-      <label>BCSF22M038:</label>
-      <input type="number" class="mark-input" data-sid="BCSF22M038" placeholder="Marks out of 10" min="0" max="10">
-    </div>
-    <div class="student-box">
-      <label>BCSF22M053:</label>
-      <input type="number" class="mark-input" data-sid="BCSF22M053" placeholder="Marks out of 10" min="0" max="10">
-    </div>
-  </div>
+    <label for="marks2">Marks for Student 2:</label>
+    <input type="number" id="marks2" required>
 
-  <button onclick="submitForm()">Submit to Google Sheet</button>
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="message"></p>
 
   <script>
-    async function submitForm() {
-      const gmail = document.getElementById('gmail').value.trim();
-      const group = document.getElementById('group').value.trim();
+    const form = document.getElementById('marksForm');
+    const message = document.getElementById('message');
 
-      if (!gmail || !group) {
-        alert("Please enter Gmail and Group ID.");
-        return;
-      }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-      const markInputs = document.querySelectorAll(".mark-input");
-      const marks = {};
-      markInputs.forEach(input => {
-        const sid = input.getAttribute("data-sid");
-        const value = input.value.trim();
-        if (value) marks[sid] = Number(value);
-      });
-
-      const payload = {
-        gmail: gmail,
-        group: group,
-        marks: marks
+      const data = {
+        gmail: form.gmail.value,
+        group: form.group.value,
+        marks: {
+          [form.sid1.value]: form.marks1.value,
+          [form.sid2.value]: form.marks2.value
+        }
       };
 
       try {
         const res = await fetch("https://script.google.com/macros/s/AKfycbz7HEmcrAXUUNq5z7Y1JrmgMph9fKH0tqtKaOipFzW_k9aA2BtrFF6BqmMJLbOQ1wNW/exec", {
           method: "POST",
-          body: JSON.stringify(payload),
+          body: JSON.stringify(data),
           headers: {
             "Content-Type": "application/json"
           }
         });
 
-        if (res.ok) {
-          alert("✅ Submitted successfully!");
+        const result = await res.json();
+        if (result.status === "success") {
+          message.textContent = "✅ Marks submitted successfully!";
+          message.className = "success";
+          form.reset();
         } else {
-          alert("❌ Submission failed. Check Apps Script permissions.");
+          message.textContent = "❌ Error: " + result.message;
+          message.className = "error";
         }
       } catch (err) {
-        alert("🚨 Error: " + err.message);
+        message.textContent = "❌ Request failed: " + err.message;
+        message.className = "error";
       }
-    }
+    });
   </script>
-
 </body>
 </html>
-
